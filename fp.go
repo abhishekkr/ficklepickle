@@ -1,71 +1,54 @@
 package ficklepickle
 
 import (
-	receiver "github.com/abhishekkr/ficklepickle/receiver"
-	sender "github.com/abhishekkr/ficklepickle/sender"
+	"errors"
 
-	golcompress "github.com/abhishekkr/gol/golcompress"
-	golcrypt "github.com/abhishekkr/gol/golcrypt"
-	golenv "github.com/abhishekkr/gol/golenv"
+	pickle "github.com/abhishekkr/ficklepickle/pickle"
+	reader "github.com/abhishekkr/ficklepickle/reader"
+	unpickle "github.com/abhishekkr/ficklepickle/unpickle"
+	writer "github.com/abhishekkr/ficklepickle/writer"
+
 	gollog "github.com/abhishekkr/gol/gollog"
-	jsoniter "github.com/json-iterator/go"
-)
-
-var (
-	Compression  = golenv.OverrideIfEnvBool("FICKLEPICKLE_COMPRESSION", true)
-	CompressWith = golenv.OverrideIfEnv("FICKLEPICKLE_COMPRESS_WITH", "brotli")
-
-	Encryption       = golenv.OverrideIfEnvBool("FICKLEPICKLE_ENCRYPTION", true)
-	Cookie           = []byte(golenv.OverrideIfEnv("FICKLEPICKLE_COOKIE", "secret-cookie"))
-	EncryptionScheme = golenv.OverrideIfEnv("FICKLEPICKLE_ENCRYPTION_SCHEME", "aes")
-
-	json = jsoniter.ConfigCompatibleWithStandardLibrary
 )
 
 func Pickle(data interface{}) (blob []byte, err error) {
-	gollog.Info("pickle")
-	if blob, err = json.Marshal(data); err != nil {
-		return
-	}
-	if Encryption == true {
-		if blob, err = golcrypt.Encrypt(blob, Cookie, EncryptionScheme); err != nil {
-			return
-		}
-	}
-	if Compression == true {
-		if blob, err = golcompress.Compress(blob, CompressWith); err != nil {
-			return
-		}
-	}
-	return
+	return pickle.PickleGob(data)
 }
 
-func Unpickle(data []byte, skeleton interface{}) (interface{}, error) {
-	gollog.Info("unpickle")
+func Unpickle(data []byte, skeleton interface{}) error {
+	return unpickle.UnpickleGob(data, skeleton)
+}
+
+func Write(mode string, id string, data interface{}) error {
+	blob, err := Pickle(data)
+	if err != nil {
+		return err
+	}
+
+	switch mode {
+	case "vanilla-file":
+		return writer.VanillaFile(id, blob)
+	default:
+		gollog.Err("unsupported write mode")
+		return errors.New("ficklepickle: unsupported write mode")
+	}
+}
+
+func Read(mode string, id string, skeleton interface{}) error {
+	var blob []byte
 	var err error
-	if Compression == true {
-		if data, err = golcompress.Decompress(data, CompressWith); err != nil {
-			return skeleton, err
-		}
 
+	switch mode {
+	case "vanilla-file":
+		blob, err = reader.VanillaFile(id)
+	default:
+		gollog.Err("unsupported read mode")
+		err = errors.New("ficklepickle: unsupported read mode")
 	}
-	if Encryption == true {
-		if data, err = golcrypt.Decrypt(data, Cookie, EncryptionScheme); err != nil {
-			return skeleton, err
-		}
+	if err != nil {
+		return err
 	}
-	if err = json.Unmarshal(data, &skeleton); err != nil {
-		return skeleton, err
-	}
-	return skeleton, err
-}
 
-func Send() {
-	gollog.Info("send")
-	sender.Execute()
-}
-
-func Receive() {
-	gollog.Info("receive")
-	receiver.Execute()
+	err = Unpickle(blob, skeleton)
+	return err
 }
