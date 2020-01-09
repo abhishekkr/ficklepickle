@@ -10,7 +10,8 @@ import (
 	golcrypt "github.com/abhishekkr/gol/golcrypt"
 )
 
-func UnpickleGob(data []byte, skeleton interface{}) error {
+// Gob returns error state for updating provided reference of 'skeleton' inteface from gob-decoded unpickled byte arraycalongwith Decompression and Decryption.
+func Gob(data []byte, skeleton interface{}) error {
 	var err error
 
 	if config.Compression == true {

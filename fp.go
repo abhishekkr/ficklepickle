@@ -11,14 +11,17 @@ import (
 	gollog "github.com/abhishekkr/gol/gollog"
 )
 
+// Pickle returns pickled byte array and error state for provided 'data' as interface.
 func Pickle(data interface{}) (blob []byte, err error) {
-	return pickle.PickleGob(data)
+	return pickle.Gob(data)
 }
 
+// Unpickle returns error state for provided 'data' byte array, updates provided reference to interface for Go type.
 func Unpickle(data []byte, skeleton interface{}) error {
-	return unpickle.UnpickleGob(data, skeleton)
+	return unpickle.Gob(data, skeleton)
 }
 
+// Write returns error state for persisting pickle of provided 'data' as interface mapped to provided 'id' using 'mode'.
 func Write(mode string, id string, data interface{}) error {
 	blob, err := Pickle(data)
 	if err != nil {
@@ -34,6 +37,7 @@ func Write(mode string, id string, data interface{}) error {
 	}
 }
 
+// Read returns error state for restoring pickle of provided 'id' using 'mode'; updates provided reference to 'skeleton' interface Go type.
 func Read(mode string, id string, skeleton interface{}) error {
 	var blob []byte
 	var err error
