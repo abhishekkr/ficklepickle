@@ -11,3 +11,6 @@ temp/*
 *.cfg
 *.lock
 *.sock
+
+go-tasks.pkg
+_tests_behavioral_/johnny
