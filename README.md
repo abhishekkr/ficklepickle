@@ -1,8 +1,10 @@
 ## ficklepickle
 
 > it's a simple struct pickling library with compression and encryption
+>
+> read/write/delete available over file, db and tcp server
 
-* [sample usage](_tests_behavioral_/pickler.go)
+* [sample usage](_tests_behavioral_/pickler.go); [sample rpc server](_tests_behavioral_/fickle_server.go)
 
 ![FicklePickle](docs/ficklepickle.png) | [![Go Report Card](https://goreportcard.com/badge/github.com/abhishekkr/ficklepickle)](https://goreportcard.com/report/github.com/abhishekkr/ficklepickle)
 
@@ -48,7 +50,7 @@ fmt.Println(yload.Name) // shall output 'somework'
 ```
 
 
-#### Persist using a mode (local file, database)
+#### Persist using a mode (local file, database; remote TCP service)
 
 ```
 // for normal local file
@@ -56,6 +58,10 @@ mode = ficklepickle.RwFile
 
 // for github.com/abhishekkr/gol/golkeyval supported database
 mode = ficklepickle.RwDb // database type default: leveldb, configurable
+
+// for remote TCP server hosted pickles, can be used to share across services
+// sample TCP service can be created similar to example code at: _tests_behavioral_/fickle_server.go
+mode = ficklepickle.RwRpc // remote database type default: leveldb, configurable in Rpc Server
 ```
 
 * Pickle
@@ -84,11 +90,5 @@ if err := ficklepickle.Delete(mode, "metric_xload"); err != nil {
 }
 
 ```
-
----
-
-### ToDo
-
-* Read/Write to support RPC like server/client model
 
 ---

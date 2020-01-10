@@ -5,6 +5,7 @@ import (
 
 	database "github.com/abhishekkr/ficklepickle/database"
 	deleter "github.com/abhishekkr/ficklepickle/deleter"
+	ficklerpc "github.com/abhishekkr/ficklepickle/ficklerpc"
 	pickle "github.com/abhishekkr/ficklepickle/pickle"
 	reader "github.com/abhishekkr/ficklepickle/reader"
 	unpickle "github.com/abhishekkr/ficklepickle/unpickle"
@@ -18,10 +19,13 @@ const (
 	RwVanillaFile = "vanilla-file"
 
 	// RwFile is alias to RwVanillaFile.
-	RwFile = "vanilla-file"
+	RwFile = "file"
 
 	// RwDb is read/write mode to use a DB for pickle persistence (database type gets managed by config.RwDbDriver).
 	RwDb = "database"
+
+	// RwRpc is read/write mode to use a TCP ficklepickle server for pickle persistence (database type gets managed by config.RwDbDriver).
+	RwRpc = "rpc"
 )
 
 // Pickle returns pickled byte array and error state for provided 'data' as interface.
@@ -42,10 +46,12 @@ func Write(mode string, id string, data interface{}) error {
 	}
 
 	switch mode {
-	case "vanilla-file":
+	case RwFile, RwVanillaFile:
 		return writer.VanillaFile(id, blob)
-	case "database":
+	case RwDb:
 		return writer.Database(id, blob)
+	case RwRpc:
+		return writer.Rpc(id, blob)
 	default:
 		gollog.Err("unsupported write mode")
 		return errors.New("ficklepickle: unsupported write mode")
@@ -58,10 +64,12 @@ func Read(mode string, id string, skeleton interface{}) error {
 	var err error
 
 	switch mode {
-	case "vanilla-file":
+	case RwFile, RwVanillaFile:
 		blob, err = reader.VanillaFile(id)
-	case "database":
+	case RwDb:
 		blob, err = reader.Database(id)
+	case RwRpc:
+		blob, err = reader.Rpc(id)
 	default:
 		gollog.Err("unsupported read mode")
 		err = errors.New("ficklepickle: unsupported read mode")
@@ -77,10 +85,12 @@ func Read(mode string, id string, skeleton interface{}) error {
 // Delete returns error state for removing pickle of provided provided 'id' using 'mode'.
 func Delete(mode string, id string) error {
 	switch mode {
-	case "vanilla-file":
+	case RwFile, RwVanillaFile:
 		return deleter.VanillaFile(id)
-	case "database":
+	case RwDb:
 		return deleter.Database(id)
+	case RwRpc:
+		return deleter.Rpc(id)
 	default:
 		gollog.Err("unsupported delete mode")
 		return errors.New("ficklepickle: unsupported delete mode")
@@ -89,4 +99,12 @@ func Delete(mode string, id string) error {
 
 func CloseDatabase() {
 	database.Close()
+}
+
+func StartTcpServer() {
+	ficklerpc.Server()
+}
+
+func CloseTcpServer() {
+	ficklerpc.Close()
 }

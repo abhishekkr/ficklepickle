@@ -3,6 +3,7 @@ package writer
 import (
 	config "github.com/abhishekkr/ficklepickle/config"
 	database "github.com/abhishekkr/ficklepickle/database"
+	ficklerpc "github.com/abhishekkr/ficklepickle/ficklerpc"
 
 	golfilesystem "github.com/abhishekkr/gol/golfilesystem"
 )
@@ -29,4 +30,9 @@ func VanillaFile(id string, blob []byte) error {
 func Database(id string, blob []byte) error {
 	initWrite()
 	return database.Write(id, blob)
+}
+
+// Rpc returns error state for creating remote entry of 'blob' mapped to 'id'.
+func Rpc(id string, blob []byte) error {
+	return ficklerpc.Write(id, blob)
 }

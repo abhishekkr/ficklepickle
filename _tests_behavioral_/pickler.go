@@ -52,6 +52,10 @@ func testReadWrite(johnny Person, mode string) {
 	fmt.Println(j)
 	golassert.AssertEqual(err, nil)
 
+	err = ficklepickle.Delete(mode, "johnny")
+	fmt.Println("~delete:")
+	golassert.AssertEqual(err, nil)
+
 	golassert.AssertEqual(johnny.Name, j.Name)
 	golassert.AssertEqual(johnny.Address, j.Address)
 	golassert.AssertEqual(johnny.Xphone.Home, j.Xphone.Home)
@@ -66,6 +70,10 @@ func testReadWriteDb(johnny Person) {
 	testReadWrite(johnny, ficklepickle.RwDb)
 }
 
+func testReadWriteRpc(johnny Person) {
+	testReadWrite(johnny, ficklepickle.RwRpc)
+}
+
 func main() {
 	johnny := Person{Name: "Johnny", Address: "Wherever"}
 	fmt.Println("[+] Pickle/Unpickle")
@@ -74,5 +82,7 @@ func main() {
 	testReadWriteFile(johnny)
 	fmt.Println("[+] Read/Write Database")
 	testReadWriteDb(johnny)
+	fmt.Println("[+] Read/Write RPC")
+	testReadWriteRpc(johnny)
 	fmt.Println("[+] done.")
 }

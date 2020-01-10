@@ -26,6 +26,9 @@ var (
 	RwDbDriver = golenv.OverrideIfEnv("FICKLEPICKLE_DBDRIVER", "leveldb")
 	// DbName is name of database, default: fickle_pickle. Configurable via env var 'FICKLEPICKLE_DBNAME'
 	DbName = golenv.OverrideIfEnv("FICKLEPICKLE_DBDRIVER", "fickle_pickle")
+
+	// RpcServerPort configures the listen string to bind for RPC Server, default: localhost:8080. Configurable via env var 'FICKLEPICKLE_RPC_LISTENAT'
+	RpcServerPort = golenv.OverrideIfEnv("FICKLEPICKLE_RPC_LISTENAT", "localhost:8080")
 )
 
 // PicklePath returns full file path to persist pickle in PickleDir using 'id' as filename.
