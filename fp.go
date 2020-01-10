@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	// RWVanillaFile is read/write to use simple one file per pickle.
+	// RwVanillaFile is read/write to use simple one file per pickle.
 	RwVanillaFile = "vanilla-file"
 
 	// RwFile is alias to RwVanillaFile.
@@ -97,14 +97,17 @@ func Delete(mode string, id string) error {
 	}
 }
 
+// CloseDatabase forwards close operation for database.
 func CloseDatabase() {
 	database.Close()
 }
 
+// StartTcpServer forwards start of tcp server to ficklerpc.
 func StartTcpServer() {
 	ficklerpc.Server()
 }
 
+// CloseTcpServer forwards close of tcp server to ficklerpc.
 func CloseTcpServer() {
 	ficklerpc.Close()
 }

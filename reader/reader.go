@@ -19,7 +19,7 @@ func Database(id string) ([]byte, error) {
 	return database.Read(id)
 }
 
-// FickleRpc returns byte array and error state for reading remote entry mapped to 'id'.
+// Rpc returns byte array and error state for reading remote entry mapped to 'id'.
 func Rpc(id string) ([]byte, error) {
 	return ficklerpc.Read(id)
 }

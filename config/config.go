@@ -22,7 +22,7 @@ var (
 	// PickleDir configures base directory to store pickled data in if 'Read/Write' gets utilized. Configurable via env var 'FICKLEPICKLE_DIR'.
 	PickleDir = golenv.OverrideIfEnv("FICKLEPICKLE_DIR", "./ficklepickle-data")
 
-	// RwDbDefault is db driver to picked if read/write mode is database, default: leveldb. Configurable via env var 'FICKLEPICKLE_DBDRIVER'
+	// RwDbDriver is db driver to picked if read/write mode is database, default: leveldb. Configurable via env var 'FICKLEPICKLE_DBDRIVER'
 	RwDbDriver = golenv.OverrideIfEnv("FICKLEPICKLE_DBDRIVER", "leveldb")
 	// DbName is name of database, default: fickle_pickle. Configurable via env var 'FICKLEPICKLE_DBNAME'
 	DbName = golenv.OverrideIfEnv("FICKLEPICKLE_DBDRIVER", "fickle_pickle")
