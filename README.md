@@ -4,6 +4,10 @@
 
 * [sample usage](_tests_behavioral_/pickler.go)
 
+![FicklePickle](docs/ficklepickle.png) | [![Go Report Card](https://goreportcard.com/badge/github.com/abhishekkr/ficklepickle)](https://goreportcard.com/report/github.com/abhishekkr/ficklepickle)
+
+---
+
 ### Usage
 
 * to fetch this go package `go get -u github.com/abhishekkr/ficklepickle`
@@ -44,12 +48,20 @@ fmt.Println(yload.Name) // shall output 'somework'
 ```
 
 
-#### Persist in local file
+#### Persist using a mode (local file, database)
+
+```
+// for normal local file
+mode = ficklepickle.RwFile
+
+// for github.com/abhishekkr/gol/golkeyval supported database
+mode = ficklepickle.RwDb // database type default: leveldb, configurable
+```
 
 * Pickle
 
 ```
-err := ficklepickle.Write("vanilla-file", "metric_xload", xload)
+err := ficklepickle.Write(mode, "metric_xload", xload)
 if err != nil {
   panic("Pickle error for Metric")
 }
@@ -58,22 +70,25 @@ if err != nil {
 * UnPickle
 
 ```
-if err := ficklepickle.Read("vanilla-file", "metric_xload", &yload); err != nil {
+if err := ficklepickle.Read(mode, "metric_xload", &yload); err != nil {
   panic("Unpickle error for Metric")
 }
 fmt.Println(yload.Name) // shall output 'somework'
 ```
 
----
+* Delete Pickle
 
-![FicklePickle](docs/ficklepickle.png) | [![Go Report Card](https://goreportcard.com/badge/github.com/abhishekkr/ficklepickle)](https://goreportcard.com/report/github.com/abhishekkr/ficklepickle)
+```
+if err := ficklepickle.Delete(mode, "metric_xload"); err != nil {
+  panic("Delete pickle error for Metric")
+}
+
+```
 
 ---
 
 ### ToDo
 
 * Read/Write to support RPC like server/client model
-
-* Read/Write to support embedded KeyVal store
 
 ---

@@ -14,3 +14,4 @@ temp/*
 
 go-tasks.pkg
 _tests_behavioral_/johnny
+_tests_behavioral_/fickle_pickle/**

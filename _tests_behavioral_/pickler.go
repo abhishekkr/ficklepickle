@@ -38,16 +38,16 @@ func testPickleUnpickle(johnny Person) {
 	golassert.AssertEqual(johnny.Xphone.Office, j.Xphone.Office)
 }
 
-func testReadWrite(johnny Person) {
+func testReadWrite(johnny Person, mode string) {
 	johnny.Xphone = Phone{Home: "010101"}
 
-	err := ficklepickle.Write("vanilla-file", "johnny", johnny)
+	err := ficklepickle.Write(mode, "johnny", johnny)
 	fmt.Println("~write:")
 	fmt.Println(johnny)
 	golassert.AssertEqual(err, nil)
 
 	j := Person{}
-	err = ficklepickle.Read("vanilla-file", "johnny", &j)
+	err = ficklepickle.Read(mode, "johnny", &j)
 	fmt.Println("~read:")
 	fmt.Println(j)
 	golassert.AssertEqual(err, nil)
@@ -58,9 +58,21 @@ func testReadWrite(johnny Person) {
 	golassert.AssertEqual(johnny.Xphone.Office, j.Xphone.Office)
 }
 
+func testReadWriteFile(johnny Person) {
+	testReadWrite(johnny, ficklepickle.RwFile)
+}
+
+func testReadWriteDb(johnny Person) {
+	testReadWrite(johnny, ficklepickle.RwDb)
+}
+
 func main() {
 	johnny := Person{Name: "Johnny", Address: "Wherever"}
+	fmt.Println("[+] Pickle/Unpickle")
 	testPickleUnpickle(johnny)
-	testReadWrite(johnny)
-	fmt.Println("done.")
+	fmt.Println("[+] Read/Write File")
+	testReadWriteFile(johnny)
+	fmt.Println("[+] Read/Write Database")
+	testReadWriteDb(johnny)
+	fmt.Println("[+] done.")
 }

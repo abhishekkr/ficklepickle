@@ -3,12 +3,25 @@ package ficklepickle
 import (
 	"errors"
 
+	database "github.com/abhishekkr/ficklepickle/database"
+	deleter "github.com/abhishekkr/ficklepickle/deleter"
 	pickle "github.com/abhishekkr/ficklepickle/pickle"
 	reader "github.com/abhishekkr/ficklepickle/reader"
 	unpickle "github.com/abhishekkr/ficklepickle/unpickle"
 	writer "github.com/abhishekkr/ficklepickle/writer"
 
 	gollog "github.com/abhishekkr/gol/gollog"
+)
+
+const (
+	// RWVanillaFile is read/write to use simple one file per pickle.
+	RwVanillaFile = "vanilla-file"
+
+	// RwFile is alias to RwVanillaFile.
+	RwFile = "vanilla-file"
+
+	// RwDb is read/write mode to use a DB for pickle persistence (database type gets managed by config.RwDbDriver).
+	RwDb = "database"
 )
 
 // Pickle returns pickled byte array and error state for provided 'data' as interface.
@@ -31,6 +44,8 @@ func Write(mode string, id string, data interface{}) error {
 	switch mode {
 	case "vanilla-file":
 		return writer.VanillaFile(id, blob)
+	case "database":
+		return writer.Database(id, blob)
 	default:
 		gollog.Err("unsupported write mode")
 		return errors.New("ficklepickle: unsupported write mode")
@@ -45,6 +60,8 @@ func Read(mode string, id string, skeleton interface{}) error {
 	switch mode {
 	case "vanilla-file":
 		blob, err = reader.VanillaFile(id)
+	case "database":
+		blob, err = reader.Database(id)
 	default:
 		gollog.Err("unsupported read mode")
 		err = errors.New("ficklepickle: unsupported read mode")
@@ -55,4 +72,21 @@ func Read(mode string, id string, skeleton interface{}) error {
 
 	err = Unpickle(blob, skeleton)
 	return err
+}
+
+// Delete returns error state for removing pickle of provided provided 'id' using 'mode'.
+func Delete(mode string, id string) error {
+	switch mode {
+	case "vanilla-file":
+		return deleter.VanillaFile(id)
+	case "database":
+		return deleter.Database(id)
+	default:
+		gollog.Err("unsupported delete mode")
+		return errors.New("ficklepickle: unsupported delete mode")
+	}
+}
+
+func CloseDatabase() {
+	database.Close()
 }
